@@ -58,7 +58,7 @@ def __processFiles():
                           bWritePng=False)
 
 def openInfluxDb():
-  print('InfluxDB %s:%d %s' % (config_http_server.strInfluxDbHost, config_http_server.strInfluxDbPort, config_http_server.strInfluxDbDatabase))
+  print('InfluxDB open %s:%d %s' % (config_http_server.strInfluxDbHost, config_http_server.strInfluxDbPort, config_http_server.strInfluxDbDatabase))
   return influxdb.InfluxDBClient(config_http_server.strInfluxDbHost, config_http_server.strInfluxDbPort, '', '', config_http_server.strInfluxDbDatabase)
 
 class GrafanaInfluxGetNtpTime(python3_grafana_log_reader_lib.GrafanaDumper):
@@ -194,13 +194,13 @@ class GrafanaInfluxDbDumper(python3_grafana_log_reader_lib.GrafanaDumper):
   def __writeToInfluxDB(self, strFilenameFull):
     # Set up influxDB connection
     # url, port, user, pw, db
-    print('InfluxDB %s:%d %s' % (config_http_server.strInfluxDbHost, config_http_server.strInfluxDbPort, config_http_server.strInfluxDbDatabase))
     objInfluxDBClient = openInfluxDb()
 
     self.__addSummary()
 
     # Write data to influxDB
     # https://influxdb-python.readthedocs.io/en/latest/api-documentation.html?highlight=time_precision
+    # print('InfluxDB write %s:%d %s' % (config_http_server.strInfluxDbHost, config_http_server.strInfluxDbPort, config_http_server.strInfluxDbDatabase))
     print('%s: Writing %d measurements to InfluxDB...' % (os.path.basename(strFilenameFull), len(self.__listMeasurements)))
     bSuccess = objInfluxDBClient.write_points(self.__listMeasurements, time_precision='ms', protocol='json')
 

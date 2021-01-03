@@ -1,13 +1,17 @@
 import os
 import sys
 import pathlib
+from urllib.parse import urlparse
 
 import flask
+import jinja2
 from werkzeug.exceptions import HTTPException
 
 app = flask.Flask(__name__)
 app.jinja_env.trim_blocks = True
 app.jinja_env.lstrip_blocks = True
+# This will force exceptions when a variable is missing in a template
+app.jinja_env.undefined = jinja2.StrictUndefined
 
 strFileDirectory = pathlib.Path(__file__).absolute().parent
 strHttpDirectory = strFileDirectory.parent.parent
@@ -32,8 +36,15 @@ def handle_exception(e):
 
 @app.route('/')
 def index():
-  return flask.render_template('index.html')
+  return flask.render_template('index.html', host=flask.request.host)
 
+@app.route('/favicon.ico')
+def favicon_ico():
+  return '-'
+
+@app.route('/index.html')
+def index_html():
+  return flask.redirect(flask.url_for('index'))
 
 @app.route('/intro.html')
 def intro():
@@ -44,7 +55,10 @@ def intro():
 
   addLink('github', 'https://github.com/tempstabilizer2018group/tempstabilizer2018')
   # addLink('grafana', 'http://%(HTTP_HOST)s:3000' % environ)
-  addLink('grafana', f'http://{flask.request.remote_addr}:3000')
+
+  url_parsed = urlparse(flask.request.base_url)
+
+  addLink('grafana', f'http://{url_parsed.hostname}:3000')
   addLink('summary (summary of configured against live nodes)', 'summary.html')
   addLink('summary_old (summary of configured against live nodes)', 'summary_old.html')
   addLink(portable_firmware_constants.strHTTP_PATH_VERSIONCHECK, '%(strHTTP_PATH_VERSIONCHECK)s?%(strHTTP_ARG_MAC)s=3C71BF0F97A4&%(strHTTP_ARG_VERSION)s=heads-SLASH-master;1' % portable_firmware_constants.__dict__)
@@ -67,7 +81,7 @@ def summary_old():
 def summary():
   import python3_http_summary
   table = python3_http_summary.Table()
-  return flask.render_template('summary.html', table = table)
+  return flask.render_template('summary.html', table=table)
 
 
 @app.route('/influxdb_delete')

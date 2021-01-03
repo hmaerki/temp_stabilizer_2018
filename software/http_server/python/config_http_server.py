@@ -6,7 +6,8 @@ import sys
 # sudo systemctl restart apache2
 
 strInfluxDbDatabase = 'tempstabilizer2018'
-strInfluxDbHost = 'www.tempstabilizer2018.org'
+# This is the name in the docker-compose file
+strInfluxDbHost = 'influxdb_container'
 strInfluxDbPort = 8086
 strInfluxDbTagOrigin = 'tempstabilizer2018'
 strInfluxDbNameOrigin = 'origin'

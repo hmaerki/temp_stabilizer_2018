@@ -388,13 +388,13 @@ class GitHubPublicPull(GithubPullBase):
         bData = f.read()
         return bData
     except Exception as e:
-      raise Exception('Failed to get "%s": %s, code=' % (strUrl, str(e), f.code()))
+      raise Exception(f'Failed to get "{strUrl}": {e}')
 
   def __init__(self, strDirectory=None):
     GithubPullBase.__init__(self, strDirectory)
 
   def _getRepo(self):
-    return 'www.github.com via %s' % socket.gethostname()
+    return f'www.github.com via {socket.gethostname()}'
 
   def _getConfigNodesFromGithub2(self):
     # https://raw.githubusercontent.com/tempstabilizer2018group/tempstabilizer2018/master/software/http_server/python/config_nodes.py
@@ -417,7 +417,8 @@ class GitHubPublicPull(GithubPullBase):
     LOW_LIMIT = 5
     rate_remaining, rate_limit = objGithub.rate_limiting
     rate_resettime = objGithub.rate_limiting_resettime
-    msg = 'Github Ratelimit: Remaining %d of %d. Limit set to %d. Will reset in %0.1f min.' % (rate_remaining, rate_limit, LOW_LIMIT, (rate_resettime - time.time())/60.0)
+    reset_time_min = (rate_resettime - time.time())/60.0
+    msg = f'Github Ratelimit: Remaining {rate_remaining} of {rate_limit}. Limit set to {LOW_LIMIT}. Will reset in {reset_time_min:0.0f} min.'
     if rate_remaining < LOW_LIMIT:
       writeToApacheErrorLog('Exception: %s' % msg)
       raise Exception(msg)

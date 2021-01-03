@@ -5,7 +5,7 @@ set -e
 
 # git pull
 
-docker build -t tempstab_http .
+docker build -t tempstab_http -f http_server_Dockerfile .
 
 docker container rm --force tempstab_http_container || true
 
